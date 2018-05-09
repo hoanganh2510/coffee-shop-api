@@ -31,3 +31,7 @@ Route::apiResource('customers', 'CustomerController');
 Route::apiResource('coupons', 'CouponController');
 
 Route::apiResource('orders', 'OrderController');
+
+Route::put('orders/{id}/transaction', 'OrderController@transaction');
+
+Route::get('distance', 'OrderController@getDistance');

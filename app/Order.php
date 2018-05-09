@@ -22,10 +22,10 @@ class Order extends Model
     }
 
     public function coupon() {
-        return $this->belongsTo('App\Coupon');
+        return $this->hasOne('App\Coupon');
     }
 
-    public function oderItems() {
+    public function orderItems() {
         return $this->hasMany('App\OrderItem');
     }
 }

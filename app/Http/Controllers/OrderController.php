@@ -19,6 +19,9 @@ class OrderController extends Controller
     public function index()
     {
         //
+        $orders = Order::with('orderItems', 'orderItems.product')->get();
+        return response()->json([
+            'orders' => $orders], 200);
     }
 
     /**
@@ -156,5 +159,23 @@ class OrderController extends Controller
         return response()->json([
             'message' => 'Order Deleted Successfully'
         ], 200);
+    }
+
+    public function transaction($id) {
+        $order = Order::findOrFail($id);
+        $total_price = 0;
+        foreach ($order->orderItems as $order_item) {
+            $total_price = $total_price + $order_item->price * $order_item->quantity;
+        }
+
+        $total_price = $total_price + $order->shipping_fee;
+
+        if ($order->coupon_id != null) {
+            $coupon = Coupon::findOrFail($order->coupon_id);
+            $total_price = $total_price - $total_price * $coupon->percentage / 100;
+        }
+
+
+        return response()->json(['price' => $total_price], 200);
     }
 }

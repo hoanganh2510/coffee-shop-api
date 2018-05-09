@@ -20,8 +20,4 @@ class Product extends Model
     public function productDetails() {
         return $this->hasMany('App\ProductDetail');
     }
-
-    public function orderItem() {
-        return $this->hasOne('App\OrderItem');
-    }
 }
