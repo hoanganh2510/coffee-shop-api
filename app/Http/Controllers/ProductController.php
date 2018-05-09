@@ -60,7 +60,6 @@ class ProductController extends Controller
             'category_id' => $request->category_id
         ]);
 
-
         foreach ($request->product_details as $product_detail) {
             $detail = ProductDetail::create([
                'size' => $product_detail['size'],
@@ -86,6 +85,10 @@ class ProductController extends Controller
     public function show($id)
     {
         //
+        $product = Product::with('productDetails')->where('id', $id)->first();
+        return response()->json([
+            $product
+        ], 200);
     }
 
     /**
@@ -115,9 +118,8 @@ class ProductController extends Controller
         $product->image_url = $request->image_url;
         $product->description = $request->description;
         $product->save();
-
         foreach ($request->product_details as $product_detail) {
-            if ($product_detail['id'] != null) {
+            if (array_key_exists('id', $product_detail)) {
                 $detail = ProductDetail::find($product_detail['id']);
                 $detail->size = $product_detail['size'];
                 $detail->price = $product_detail['price'];
@@ -138,7 +140,7 @@ class ProductController extends Controller
         }
 
         return response()->json([
-            'message' => 'Delete Product Successfully'
+            'message' => 'Update Product Successfully'
         ], 200);
     }
 

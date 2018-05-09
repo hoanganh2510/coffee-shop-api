@@ -21,9 +21,9 @@ class CreateOrderTable extends Migration
             $table->foreign('customer_id')->references('id')->on('customer')->onDelete('cascade');
             $table->integer('shop_id')->unsigned();
             $table->foreign('shop_id')->references('id')->on('shop')->onDelete('cascade');
-            $table->integer('coupon_id')->unsigned();
+            $table->integer('coupon_id')->unsigned()->nullable();
             $table->foreign('coupon_id')->references('id')->on('coupon');
-            $table->string('shipping_fee');
+            $table->float('shipping_fee');
             $table->timestamps();
         });
     }

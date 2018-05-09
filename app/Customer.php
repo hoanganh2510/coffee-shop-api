@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Customer extends Model
 {
     //
+    protected $table = 'customer';
+
     protected $fillable = [
-      'name', 'location', 'phone_number', 'lat', 'lng'
+      'name', 'email', 'phone_number'
     ];
 
     public function orders() {

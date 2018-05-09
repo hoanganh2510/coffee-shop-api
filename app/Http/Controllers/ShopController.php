@@ -16,6 +16,9 @@ class ShopController extends Controller
     public function index()
     {
         //
+        $shops = Shop::all();
+        return response()->json([
+          'shops' =>  $shops], 200);
     }
 
     /**
@@ -65,6 +68,10 @@ class ShopController extends Controller
     public function show($id)
     {
         //
+        $shop = Shop::findOrFail($id);
+        return response()->json([
+            $shop
+        ], 200);
     }
 
     /**
@@ -87,7 +94,24 @@ class ShopController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'address' => 'required|string|max:255',
+            'lat' => 'required',
+            'lng' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $shop = Shop::find($id);
+        $shop->address = $request->address;
+        $shop->lat = $request->lat;
+        $shop->lng = $request->lng;
+        $shop->save();
+
+        return response()->json([
+            'message' => 'Shop updated successfully'
+        ], 200);
     }
 
     /**
@@ -99,5 +123,10 @@ class ShopController extends Controller
     public function destroy($id)
     {
         //
+        $shop = Shop::findOrFail($id);
+        $shop->delete();
+        return response()->json([
+            'message' => 'Deleted Successfully'
+        ], 200);
     }
 }

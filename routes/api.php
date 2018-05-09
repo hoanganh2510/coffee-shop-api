@@ -25,3 +25,9 @@ Route::apiResource('categories', 'CategoryController');
 Route::apiResource('shops', 'ShopController');
 
 Route::apiResource('products', 'ProductController');
+
+Route::apiResource('customers', 'CustomerController');
+
+Route::apiResource('coupons', 'CouponController');
+
+Route::apiResource('orders', 'OrderController');

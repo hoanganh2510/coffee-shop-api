@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Category;
+use App\Coupon;
 use Validator;
 
-class CategoryController extends Controller
+class CouponController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,8 +16,9 @@ class CategoryController extends Controller
     public function index()
     {
         //
-        $categories = Category::with('products')->get();
-        return response()->json($categories, 200);
+        $coupons = Coupon::all();
+        return response()->json( [
+            'coupons' => $coupons], 200);
     }
 
     /**
@@ -38,20 +39,30 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+        //
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'code' => 'required|max:10',
+            'percentage' => 'required',
+            'status' => 'required',
+            'expired_time' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
 
-        $category = Category::create([
-            'name' => $request->name
+        $coupon = Coupon::create([
+           'description' => $request->description,
+            'code' => $request->code,
+            'percentage' => $request->percentage,
+            'status' => $request->status,
+            'expired_time' => $request->expired_time
         ]);
 
         return response()->json([
-            'message' => 'Category created'
-        ], 201);
+            'message' => 'Coupon Created Successfully'
+        ], 200);
+
     }
 
     /**
@@ -63,16 +74,8 @@ class CategoryController extends Controller
     public function show($id)
     {
         //
-        $category = Category::find($id);
-        if ($category == null) {
-            return response()->json([
-                'message' => 'Not Found'
-            ], 404);
-        }
-
-        return response()->json([
-            $category
-        ], 200);
+        $coupon = Coupon::findOrFail($id);
+        return response()->json($coupon, 200);
     }
 
     /**
@@ -96,16 +99,26 @@ class CategoryController extends Controller
     public function update(Request $request, $id)
     {
         //
-        $category = Category::find($id);
-        if ($category == null) {
-            return response()->json([
-                'message' => 'Not Found'
-            ], 404);
+        $validator = Validator::make($request->all(), [
+            'description' => 'required|string|max:255',
+            'code' => 'required|max:10',
+            'percentage' => 'required',
+            'status' => 'required',
+            'expired_time' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
         }
-        $category->name = $request->input('name');
-        $category->save();
+
+        $coupon = Coupon::findOrFail($id);
+        $coupon->description = $request->description;
+        $coupon->code = $request->code;
+        $coupon->percentage = $request->percentage;
+        $coupon->status = $request->status;
+        $coupon->expired_time = $request->expired_time;
+        $coupon->save();
         return response()->json([
-            'message' => 'Category Updated Successfully'
+            'message' => 'Customer Updated Successfully'
         ], 200);
     }
 
@@ -118,10 +131,10 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         //
-        $category = Category::find($id);
-        $category->delete();
+        $coupon = Coupon::findOrFail($id);
+        $coupon->delete();
         return response()->json([
-           'message' => 'Category Deleted Successfully'
+            'message' => 'Coupon deleted successfully'
         ], 200);
     }
 }

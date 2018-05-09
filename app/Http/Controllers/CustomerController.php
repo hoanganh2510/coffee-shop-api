@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Category;
+use App\Customer;
 use Validator;
 
-class CategoryController extends Controller
+class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,9 +15,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
-        $categories = Category::with('products')->get();
-        return response()->json($categories, 200);
+        $customers = Customer::all();
+        return response()->json([ 'customers' => $customers], 200);
     }
 
     /**
@@ -38,20 +37,26 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+        //
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
+            'email' => 'required|email|max:100',
+            'phone_number' => 'required|max:15'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
 
-        $category = Category::create([
-            'name' => $request->name
+        $customer = Customer::create([
+           'name' => $request->name,
+           'email' => $request->email,
+           'phone_number' => $request->phone_number,
         ]);
 
         return response()->json([
-            'message' => 'Category created'
-        ], 201);
+            'message' => 'Customer created successfully'
+        ], 200);
+
     }
 
     /**
@@ -63,16 +68,10 @@ class CategoryController extends Controller
     public function show($id)
     {
         //
-        $category = Category::find($id);
-        if ($category == null) {
-            return response()->json([
-                'message' => 'Not Found'
-            ], 404);
-        }
-
-        return response()->json([
-            $category
-        ], 200);
+        $customer = Customer::findOrFail($id);
+        return response()->json(
+            $customer
+        , 200);
     }
 
     /**
@@ -96,16 +95,27 @@ class CategoryController extends Controller
     public function update(Request $request, $id)
     {
         //
-        $category = Category::find($id);
-        if ($category == null) {
-            return response()->json([
-                'message' => 'Not Found'
-            ], 404);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:100',
+            'location' => 'required|max:255',
+            'phone_number' => 'required|max:15',
+            'lat' => 'required',
+            'lng' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
         }
-        $category->name = $request->input('name');
-        $category->save();
+        $customer = Customer::findOrFail($id);
+        $customer->name = $request->name;
+        $customer->email = $request->email;
+        $customer->location = $request->location;
+        $customer->phone_number = $request->phone_number;
+        $customer->lat = $request->lat;
+        $customer->lng = $request->lng;
+        $customer->save();
         return response()->json([
-            'message' => 'Category Updated Successfully'
+            'message' => 'Customer updated successfully'
         ], 200);
     }
 
@@ -118,10 +128,10 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         //
-        $category = Category::find($id);
-        $category->delete();
+        $customer = Customer::findOrFail($id);
+        $customer->delete();
         return response()->json([
-           'message' => 'Category Deleted Successfully'
+            'message' => 'Customer deleted successfully'
         ], 200);
     }
 }

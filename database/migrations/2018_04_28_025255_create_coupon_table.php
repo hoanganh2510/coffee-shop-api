@@ -18,8 +18,9 @@ class CreateCouponTable extends Migration
             $table->increments('id');
             $table->string('description');
             $table->string('code');
-            $table->string('percentage');
-            $table->dateTime('expired_time');
+            $table->float('percentage');
+            $table->integer('status');
+            $table->integer('expired_time');
             $table->timestamps();
         });
     }
