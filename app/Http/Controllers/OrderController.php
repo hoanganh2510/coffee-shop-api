@@ -8,6 +8,7 @@ use Validator;
 use App\Order;
 use App\OrderItem;
 use App\Coupon;
+use App\Shop;
 
 class OrderController extends Controller
 {
@@ -177,5 +178,43 @@ class OrderController extends Controller
 
 
         return response()->json(['price' => $total_price], 200);
+    }
+
+    public function getDistance(Request $request) {
+        $lat = $request->query('lat');
+        $lng = $request->query('lng');
+        $shops = Shop::all();
+        $distances = [];
+        foreach ($shops as $shop) {
+            $dis = $this->distance((float) $lat, (float) $lng, $shop->lat, $shop->lng, "K");
+            $ret_val = array('shop_id' => $shop->id, 'distance' => $dis, 'fee' => $this->calculate_fee($dis));
+            array_push($distances, $ret_val);
+        }
+        return response()->json(['distances' => $distances], 200);
+    }
+
+    private function distance($lat1, $lon1, $lat2, $lon2, $unit) {
+        $theta = $lon1 - $lon2;
+        $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+        $dist = acos($dist);
+        $dist = rad2deg($dist);
+        $miles = $dist * 60 * 1.1515;
+        $unit = strtoupper($unit);
+        
+        if ($unit == "K") {
+            return ($miles * 1.609344);
+        } else if ($unit == "N") {
+            return ($miles * 0.8684);
+        } else {
+            return $miles;
+        }
+    }
+
+    private function calculate_fee($distance) {
+        if ($distance < 3000) {
+            return 0;
+        } else {
+            return round($distance * 5, -3);
+        }
     }
 }

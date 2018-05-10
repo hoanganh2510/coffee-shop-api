@@ -113,7 +113,7 @@ class ProductController extends Controller
     {
         //
         $product = Product::find($id);
-
+        $product->category_id = $request->category_id;
         $product->name = $request->name;
         $product->image_url = $request->image_url;
         $product->description = $request->description;
