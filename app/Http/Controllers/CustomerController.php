@@ -53,9 +53,9 @@ class CustomerController extends Controller
            'phone_number' => $request->phone_number,
         ]);
 
-        return response()->json([
-            'message' => 'Customer created successfully'
-        ], 200);
+        return response()->json(
+            $customer
+        , 200);
 
     }
 
@@ -94,25 +94,13 @@ class CustomerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:100',
-            'location' => 'required|max:255',
-            'phone_number' => 'required|max:15',
-            'lat' => 'required',
-            'lng' => 'required'
-        ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
         $customer = Customer::findOrFail($id);
-        $customer->name = $request->name;
-        $customer->email = $request->email;
-        $customer->location = $request->location;
-        $customer->phone_number = $request->phone_number;
-        $customer->lat = $request->lat;
-        $customer->lng = $request->lng;
+        if (array_key_exists('name', $request->all())) $customer->name = $request->name;
+        if (array_key_exists('email', $request->all())) $customer->email = $request->email;
+        if (array_key_exists('location', $request->all())) $customer->location = $request->location;
+        if (array_key_exists('phone_number', $request->all())) $customer->phone_number = $request->phone_number;
+        if (array_key_exists('lat', $request->all())) $customer->lat = $request->lat;
+        if (array_key_exists('lng', $request->all())) $customer->lng = $request->lng;
         $customer->save();
         return response()->json([
             'message' => 'Customer updated successfully'
