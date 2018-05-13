@@ -13,9 +13,15 @@ class CouponController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         //
+        if (array_key_exists('code', $request->all())) {
+            $code = $request->query('code');
+            $coupon = Coupon::where('code', $code)->first();
+            return response()->json($coupon, 200);
+        }
+
         $coupons = Coupon::all();
         return response()->json( [
             'coupons' => $coupons], 200);
